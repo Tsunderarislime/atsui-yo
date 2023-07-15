@@ -1,0 +1,15 @@
+#Time in UTC
+time:
+  hour: 9
+  minute: 30
+
+#Location to pull weather data from
+location: 'Richmond, Canada'
+
+#Threshold (Celcius)
+threshold: 20
+
+#Discord Bot API key and Weatherstack API key here
+keys:
+  bot: ''
+  weatherstack: ''
