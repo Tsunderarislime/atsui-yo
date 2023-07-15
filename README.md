@@ -14,11 +14,10 @@ This is a Discord bot that sends messages daily. It sends out the weather (temp 
 **This bot is developed purely for fun, as there are probably other Discord bots out there that can post weather data just fine.**
 
 ## Features
-- Choose the location to pull weather data from (TBD)
-- Choose which channel to post in (TBD)
-- Choose what time to post the weather (TBD)
-- Choose the temperature units (TBD)
-- Choose the temperature threshold to post the audio clip (TBD)
+- Choose the location to pull weather data from
+- Choose which channel to post in
+- Choose what time to post the weather
+- Choose the temperature threshold to post the audio clip
 
 ## Can I add this bot to my Discord server?
-If you have a way to host it, then sure go ahead. You will have to modify *token.txt* and *owner.txt* beforehand.
+If you have a way to host it, then sure go ahead. You will have to modify *config.yml* though. You will have to obtain your own Discord bot token and Weatherstack API key in order to run this bot.
