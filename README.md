@@ -9,7 +9,7 @@
 ---
 
 ## Overview
-This is a Discord bot that sends messages daily. It sends out the weather (temp high, low, mean, sunny, rainy, etc.) for the day. If the temperature exceeds a threshold, the bot will also post an audio clip that will get more distorted as the temperature further exceeds the threshold.
+This is a Discord bot that sends messages daily. It sends out the weather (temp high, low, mean, sunny, rainy, etc.) for the day. If the temperature exceeds a threshold, the bot will also post an audio clip that will get more distorted as the temperature further exceeds the threshold. Set these parameters in the config file, then start the bot.
 
 **This bot is developed purely for fun, as there are probably other Discord bots out there that can post weather data just fine.**
 
