@@ -47,8 +47,8 @@ class Atsui(commands.Cog):
                          color=ds.Color.blue()
                          )
         embed.set_thumbnail(url=weather['current']['weather_icons'][0])
-        current = str(weather['current']['temperature']) + '°C'
-        embed.add_field(name='Current Temperature', value=current, inline=False) #Current temperature
+        current = str(weather['current']['temperature']) + '°C, ' + weather['current']['weather_descriptions'][0]
+        embed.add_field(name='Current Weather', value=current, inline=False) #Current temperature and conditions
         high = str(weather['forecast'][forecast]['maxtemp']) + '°C'
         low = str(weather['forecast'][forecast]['mintemp']) + '°C'
         embed.add_field(name='High', value=high, inline=True) #Daily max
