@@ -1,5 +1,2 @@
-#Obviously we do not my actual bot token on a PUBLIC repository
-token.txt
-
-#Prefer not to give out my Discord ID
-owner.txt
+#Don't want to give out API keys
+config.yml
