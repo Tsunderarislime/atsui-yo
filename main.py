@@ -1,4 +1,5 @@
 import discord as ds
+from discord.ext import commands
 
 #Load in the token found in token.txt (MODIFY THE FILE SO THAT IT CONTAINS YOUR OWN BOT TOKEN)
 with open('token.txt') as f:
@@ -7,23 +8,16 @@ with open('token.txt') as f:
 
 #Initialize the Discord client object
 intents = ds.Intents.default()
+intents.members = True
 intents.message_content = True
 
-client = ds.Client(intents=intents)
+bot = commands.Bot(command_prefix='^', description='TEST', intents=intents)
 
-#Client event listeners
-@client.event
+@bot.event
 async def on_ready():
-    print('We have logged in as {0.user}'.format(client))
-
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
-    
-    if message.content.startswith('$hello'):
-        await message.channel.send('Hello!')
-
+    print(f'Logged in as {bot.user} (ID: {bot.user.id})')
+    print('------')
+    await bot.load_extension('cogs.atsui')
 
 #All is good, run the bot
-client.run(token)
+bot.run(token)
