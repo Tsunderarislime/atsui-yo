@@ -2,7 +2,7 @@ import discord as ds
 from discord.ext import commands, tasks
 import yaml
 import datetime as dt
-import requests
+from utils import *
 
 #Load in the config
 with open('config.yml', 'r') as f:
@@ -15,28 +15,12 @@ intents.members = True
 intents.message_content = True
 
 bot = commands.Bot(command_prefix='^', description='TEST', intents=intents)
-
 #What to run when readying up
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user} (ID: {bot.user.id})')
     print('------')
     await bot.add_cog(Atsui(bot))
-
-
-#Get weather data using the Weatherstack API
-#Weatherstack API key and location in the YAML file
-def get_weather(key, loc):
-    #Parameters to pass into the requests.get()
-    params = {
-        'access_key': key,
-        'query': loc
-    }
-
-    #Return a json dictionary containing the weather data
-    api_result = requests.get('http://api.weatherstack.com/forecast', params)
-    return api_result.json()
-
 
 #Class that contains the cog which has the daily task loop
 class Atsui(commands.Cog):
@@ -53,7 +37,33 @@ class Atsui(commands.Cog):
     @tasks.loop(time=dt.time(hour=config['time']['hour'], minute=config['time']['minute'], tzinfo=dt.timezone.utc))
     async def atsui(self):
         #Get the weather data
+        channel = self.bot.get_channel(config['channel'])
         weather = get_weather(config['keys']['weatherstack'], config['location'])
+        forecast = next(iter(weather['forecast']))
+        
+        #Cool embed box to send
+        embed = ds.Embed(title='Weather Report',
+                         description='Good morning Sensei! Here is today\'s weather report.',
+                         color=ds.Color.blue()
+                         )
+        embed.set_thumbnail(url=weather['current']['weather_icons'][0])
+        current = str(weather['current']['temperature']) + '°C'
+        embed.add_field(name='Current Temperature', value=current, inline=False) #Current temperature
+        high = str(weather['forecast'][forecast]['maxtemp']) + '°C'
+        low = str(weather['forecast'][forecast]['mintemp']) + '°C'
+        embed.add_field(name='High', value=high, inline=True) #Daily max
+        embed.add_field(name='Low', value=low, inline=True) #Daily min
+
+        await channel.send(embed=embed)
+
+        #Begin distortion when the max temperature exceeds the specified threshold >10%
+        #Otherwise, play the sound without any distortions
+        if weather['forecast'][forecast]['maxtemp'] > (config['threshold'] * 1.1):
+            distort_wav('atsui-yo.wav', 'distorted.wav', config['threshold'], weather['forecast'][forecast]['maxtemp'])
+            await channel.send(file=ds.File('distorted.wav'))
+        elif weather['forecast'][forecast]['maxtemp'] > config['threshold']:
+            await channel.send(file=ds.File('atsui-yo.wav'))
+    
 
 
 #All is good, run the bot
