@@ -21,4 +21,4 @@ This is a Discord bot that sends messages daily. It sends out the weather (temp 
 - Choose the temperature threshold to post the audio clip (TBD)
 
 ## Can I add this bot to my Discord server?
-Currently unsure whether to make this a public bot, if people really want it then sure I guess. It's currently just a project for fun, but time will tell if this will become a "proper" bot that will see continuous development.
+If you have a way to host it, then sure go ahead. You will have to modify *token.txt* beforehand.
