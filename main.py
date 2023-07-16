@@ -1,14 +1,12 @@
 import discord as ds
 from discord.ext import commands, tasks
-import yaml
 import numpy as np
 import datetime as dt
 import utils.weather
+from utils.config import *
 
 #Load in the config
-with open('config.yml', 'r') as f:
-    config = yaml.safe_load(f)
-    f.close()
+config = load_config()
 
 #Initialize the Discord client object
 intents = ds.Intents.default()
@@ -23,19 +21,78 @@ async def on_ready():
     print('----------------------------------------------------')
     await bot.add_cog(Atsui(bot))
 
+'''
+================================================
 
-#Commands to shutdown and restart the bot
-@bot.command()
+    Commands to shutdown and restart the bot
+
+================================================
+'''
+#Shutdown and restart commands, requires admin permissions to use
+@bot.command(pass_context=True)
+@commands.has_permissions(administrator=True)
 async def shutdown(ctx):
     print('Shutting down...')
     await ctx.send('Shutting down the bot...')
     await bot.close() #This returns an exit code of 0 for the sake of run.py
 
-@bot.command()
+@bot.command(pass_context=True)
+@commands.has_permissions(administrator=True)
 async def restart(ctx):
     print('Restarting...')
     await ctx.send('Restarting...')
     exit(1) #This causes a bunch of errors to pop up in the terminal window, but seems to function fine otherwise
+
+
+#Handle use of the commands without admin permissions
+@shutdown.error
+async def shutdown_error(ctx, error):
+    if isinstance(error, commands.CheckFailure):
+        await ctx.send('Sorry, you do not have the necessary permissions to shutdown the bot.')
+
+@restart.error
+async def restart_error(ctx, error):
+    if isinstance(error, commands.CheckFailure):
+        await ctx.send('Sorry, you do not have the necessary permissions to restart the bot.')
+
+
+'''
+================================================
+
+    Commands to configure the bot
+
+================================================
+'''
+#^config <what_to_config> <arg1> <arg2> ...
+@bot.command(name='config', alias='configure')
+@commands.has_permissions(administrator=True)
+async def configure(ctx, *args):
+    #Send help dialogue if not enough arguments are passed
+    if len(args) < 1:
+        await ctx.send(embed=config_help())
+    elif args[0] in ['info', 'channel', 'meteo', 'threshold', 'time']:
+        #Info box about current configuration
+        if args[0] == 'info':
+            await ctx.send(embed=config_info(config, 'The Config Currently in Use', ds.Color.dark_green()))
+            await ctx.send(embed=config_info(load_config(), 'The Config After Restart', ds.Color.green()))
+            return
+        
+        run = 'config_' + args[0] + str(args[1:])
+        print(run)
+        try:
+            exec(run)
+            await ctx.send('Successfully modified `' + args[0] + '` in the config.\nIt is recommended that you run `^restart` to apply this new change.')
+        except Exception as e:
+            print(e)
+            await ctx.send('There appears to be an issue with the parameters being passed.\nPlease use `^config` for a quick command usage guide.')
+    else:
+        await ctx.send('Invalid command `' + args[0] + '`')
+            
+#Handle use of the commands without admin permissions
+@configure.error
+async def shutdown_error(ctx, error):
+    if isinstance(error, commands.CheckFailure):
+        await ctx.send('Sorry, you do not have the necessary permissions to change the bot configuration.')
 
 
 #Commands to send embed with links to Open-Meteo Forecast API
@@ -45,8 +102,8 @@ async def meteo(ctx):
         url='https://open-meteo.com/en/docs',
         description='Click the link above to access the Open-Meteo Forecast API. The URL generated from the API is used to pull weather forecast data for this bot.'
     )
-
     meteo.set_thumbnail(url='https://avatars.githubusercontent.com/u/86407831?s=200&v=4')
+
     await ctx.send(embed=meteo)
 
 

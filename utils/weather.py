@@ -53,6 +53,7 @@ def weather_embed(weather, colour):
     current_time = dt.datetime.strptime(weather['current_weather']['time'], '%Y-%m-%dT%H:%M')  + dt.timedelta(minutes=dt.datetime.now().minute) #Datetime object for current time
     wcode = weather['current_weather']['weathercode']
 
+    #Match the greeting to correspond to the time of day
     match np.searchsorted(morning_or_not, current_time.hour, side='right'):
         case 1: #Morning
             greeting = 'Good morning, Sensei! Here is today\'s weather forecast!'
@@ -61,8 +62,10 @@ def weather_embed(weather, colour):
                 greeting = 'Good afternoon, Sensei! Here is today\'s weather forecast!'
             else:
                 greeting = 'Good evening, Sensei! Here is today\'s weather forecast!'
-                if wcode < 10: #Change the 'sunny' weathers to 'clear' weather
-                    wcode = wcode + 10
+    
+    #Change the 'sunny' weathers to 'clear' weather
+    if (wcode < 10) and (weather['current_weather']['is_day'] == 0): 
+        wcode = wcode + 10
 
     #Current weather to put in the big text at the top of the embed
     current_weather = 'Current weather: ' + str(weather['current_weather']['temperature']) + '°C, ' + code[wcode]
@@ -73,11 +76,11 @@ def weather_embed(weather, colour):
         color=colour
     )
     #Add the high and low
-    embed.add_field(name='High', value=str(weather['daily']['temperature_2m_max'][0])+'°C', inline=False)
-    embed.add_field(name='Low', value=str(weather['daily']['temperature_2m_min'][0])+'°C', inline=False)
+    embed.add_field(name='🡹 High 🡹', value=str(weather['daily']['temperature_2m_max'][0])+'°C', inline=False)
+    embed.add_field(name='🡻 Low 🡻', value=str(weather['daily']['temperature_2m_min'][0])+'°C', inline=False)
 
-    #Footer containing the time this was sent
-    embed.set_footer(text=dt.datetime.strftime(current_time, '%Y/%m/%d %H:%M'))
+    #Footer containing the time this was sent, based off of the location where the weather is being pulled from
+    embed.set_footer(text=dt.datetime.strftime(current_time, '%Y/%m/%d %H:%M ') + weather['timezone_abbreviation'])
 
     #Return the fully constructed weather embed
     return embed
