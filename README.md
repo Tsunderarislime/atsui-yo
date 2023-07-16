@@ -17,7 +17,7 @@ This is a Discord bot that sends messages daily. It sends out the weather (temp 
 - Choose the location to pull weather data from
 - Choose which channel to post in
 - Choose what time to post the weather
-- Choose the temperature threshold to post the audio clip
+- Choose the temperature threshold to post the audio clips
 
 ## Can I add this bot to my Discord server?
-If you have a way to host it, then sure go ahead. You will have to modify *config.yml* though. You will have to obtain your own Discord bot token and Weatherstack API key in order to run this bot.
+If you have a way to host it, then sure go ahead. You will have to modify *config.yml* though. You will have to obtain your own Discord bot token, choose the channel ID that this bot will post to, and generate your Open-Meteo API request URL to use with the bot.

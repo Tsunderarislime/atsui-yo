@@ -1,22 +1,20 @@
-#Time in UTC (16:00 is 09:00PST)
+#Time in UTC (18:00 is 11:00PST)
 time:
-  hour: 16
+  hour: 18
   minute: 00
 
-#Location to pull weather data from
-location: 'Richmond, Canada'
-
 #Threshold (Celcius)
-threshold: 20
+threshold: [20, 25, 30]
 
 #
 #    Everything below here you have to get yourself
 #
 
-#Discord Bot API key and Weatherstack API key here
-keys:
-  bot: ''
-  weatherstack: ''
+#Discord Bot API key here
+key: ''
 
 #Channel ID to send the bot message to
 channel: 0
+
+#Open-Meteo API Request URL here (This example is the city I live in)
+meteo: 'https://api.open-meteo.com/v1/forecast?latitude=49.17&longitude=-123.1368&daily=temperature_2m_max,temperature_2m_min&current_weather=true&timezone=auto&forecast_days=1'
