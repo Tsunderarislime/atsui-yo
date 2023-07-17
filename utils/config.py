@@ -33,7 +33,7 @@ def write_config(cfg):
 '''
 #Get help with command usage, called when no arguments are passed in ^config
 def config_help():
-    embed = ds.Embed(title='Config Command Usage',
+    embed = ds.Embed(title='📋 Config Command Usage 📋',
         description='`^config` summons this text box.\nUse `^config info` to see the view the current config',
         color=ds.Color.magenta()
     )
@@ -41,8 +41,6 @@ def config_help():
     embed.add_field(name='Meteo URL (Use `^meteo` for more info)', value='`^config meteo <METEO URL>`', inline=False)
     embed.add_field(name='Threshold for Audio Files (°C)', value='`^config threshold <LOWER> <MIDDLE> <UPPER>`', inline=False)
     embed.add_field(name='Time for Daily Report (UTC)', value='`^config time <HOUR> <MINUTE>`', inline=False)
-
-    print(embed)
 
     return embed
 

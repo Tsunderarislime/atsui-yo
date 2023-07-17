@@ -1,6 +1,7 @@
 import discord as ds
 from discord.ext import commands, tasks
 import numpy as np
+import time
 import datetime as dt
 import utils.weather
 from utils.config import *
@@ -8,12 +9,16 @@ from utils.config import *
 #Load in the config
 config = load_config()
 
+#Timestamp on startup
+startup_time = time.time()
+
 #Initialize the Discord client object
 intents = ds.Intents.default()
 intents.members = True
 intents.message_content = True
 
 bot = commands.Bot(command_prefix='^', description='ATSUI YO', intents=intents, activity=ds.Game(name="with fire"))
+bot.remove_command('help')
 #What to run when readying up
 @bot.event
 async def on_ready():
@@ -73,12 +78,11 @@ async def configure(ctx, *args):
     elif args[0] in ['info', 'channel', 'meteo', 'threshold', 'time']:
         #Info box about current configuration
         if args[0] == 'info':
-            await ctx.send(embed=config_info(config, 'The Config Currently in Use', ds.Color.dark_green()))
-            await ctx.send(embed=config_info(load_config(), 'The Config After Restart', ds.Color.green()))
+            await ctx.send(embed=config_info(config, '▶️ The Config Currently in Use ▶️', ds.Color.dark_green()))
+            await ctx.send(embed=config_info(load_config(), '🔁 The Config After Restart 🔁', ds.Color.green()))
             return
         
         run = 'config_' + args[0] + str(args[1:])
-        print(run)
         try:
             exec(run)
             await ctx.send('Successfully modified `' + args[0] + '` in the config.\nIt is recommended that you run `^restart` to apply this new change.')
@@ -94,8 +98,27 @@ async def shutdown_error(ctx, error):
     if isinstance(error, commands.CheckFailure):
         await ctx.send('Sorry, you do not have the necessary permissions to change the bot configuration.')
 
+'''
+================================================
 
-#Commands to send embed with links to Open-Meteo Forecast API
+    Commands for miscellaneous information
+
+================================================
+'''
+#Command to list all of the commands
+@bot.command()
+async def help(ctx):
+    embed = ds.Embed(title='💡 Help 💡',
+        description='Hey Sensei! Here\'s a list of commands!',
+        color=ds.Color.green()
+    )
+    embed.add_field(name='Weather', value='- `^current`', inline=True)
+    embed.add_field(name='Information ℹ️', value='- `^help`\n- `^meteo`\n- `^uptime`', inline=True)
+    embed.add_field(name='Admin 🔑', value='- `^config`\n- `^restart`\n- `^shutdown`', inline=False)
+
+    await ctx.send(embed=embed)
+
+#Command to send embed with links to Open-Meteo Forecast API
 @bot.command()
 async def meteo(ctx):
     meteo = ds.Embed(title='Open-Meteo Forecast API',
@@ -106,6 +129,68 @@ async def meteo(ctx):
 
     await ctx.send(embed=meteo)
 
+#Command to see how long the bot has been running for since the last restart
+@bot.command()
+async def uptime(ctx):
+    elapsed = int(round(time.time() - startup_time, 0))
+
+    print(elapsed)
+
+    #Get days
+    days = elapsed // (24 * 3600)
+    elapsed = elapsed % (24 * 3600)
+
+    #Get hours
+    hours = elapsed // 3600
+    elapsed = elapsed % 3600
+
+    #Get minutes
+    minutes = elapsed // 60
+    elapsed = elapsed % 60
+
+    print(days, hours, minutes, elapsed)
+
+    #Message embed
+    embed = ds.Embed(title='⌛ Uptime ⌛',
+        color=ds.Color.green()
+    )
+    embed.add_field(name='Days', value='{d:.0f}'.format(d=days), inline=False)
+    embed.add_field(name='Hours', value='{h:.0f}'.format(h=hours), inline=True)
+    embed.add_field(name='Minutes', value='{m:.0f}'.format(m=minutes), inline=True)
+    embed.add_field(name='Seconds', value='{s:.0f}'.format(s=elapsed), inline=True)
+
+    await ctx.send(embed=embed)
+
+'''
+================================================
+
+    Commands for weather reports on demand
+
+================================================
+'''
+#Command to get 12 hour temperature forecast from current hour
+@bot.command()
+async def current(ctx):
+    #Generate the forecast
+    async with ctx.typing():
+        weather = utils.weather.get_weather(config['meteo'])
+        wcode = weather['current_weather']['weathercode']
+        l_time = weather['current_weather']['time'].replace('-', '/').replace('T', ' ') + ' ' + weather['timezone_abbreviation']
+
+        #Change the 'sunny' weathers to 'clear' weather
+        if (wcode < 10) and (weather['current_weather']['is_day'] == 0): 
+            wcode = wcode + 10
+        current_weather = 'Current weather: ' + str(weather['current_weather']['temperature']) + '°C, ' + utils.weather.code[wcode][0] + ' ' + utils.weather.code[wcode][1]
+
+        #Construct an embed including the graph
+        embed = ds.Embed(title=current_weather,
+            description=utils.weather.current(weather),
+            color=ds.Color.blue()
+        )
+        embed.add_field(name='12 Hour Forecast', value='')
+        embed.set_footer(text=l_time)
+
+    await ctx.send(embed=embed)
 
 #Class that contains the cog which has the daily task loop
 class Atsui(commands.Cog):
@@ -126,7 +211,7 @@ class Atsui(commands.Cog):
         weather = utils.weather.get_weather(config['meteo'])
         
         #Determine the colour of the embed box and which sound file to post
-        match np.searchsorted(config['threshold'], weather['daily']['temperature_2m_max'], side='right'):
+        match np.searchsorted(config['threshold'], weather['daily']['temperature_2m_max'][0], side='right'):
             case 0: #Daily high is less than the threshold entirely
                 embed = utils.weather.weather_embed(weather, colour=ds.Color.green())
                 audio = 'audio/not-bad.mp3'
