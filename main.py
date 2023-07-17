@@ -112,8 +112,8 @@ async def help(ctx):
         description='Hey Sensei! Here\'s a list of commands!',
         color=ds.Color.green()
     )
-    embed.add_field(name='Weather', value='- `^current`', inline=True)
-    embed.add_field(name='Information ℹ️', value='- `^help`\n- `^meteo`\n- `^uptime`', inline=True)
+    embed.add_field(name='Weather ☀️', value='- `^current`', inline=True)
+    embed.add_field(name='Information ℹ️', value='- `^help`\n- `^github`\n- `^meteo`\n- `^uptime`', inline=True)
     embed.add_field(name='Admin 🔑', value='- `^config`\n- `^restart`\n- `^shutdown`', inline=False)
 
     await ctx.send(embed=embed)
@@ -123,7 +123,8 @@ async def help(ctx):
 async def meteo(ctx):
     meteo = ds.Embed(title='Open-Meteo Forecast API',
         url='https://open-meteo.com/en/docs',
-        description='Click the link above to access the Open-Meteo Forecast API. The URL generated from the API is used to pull weather forecast data for this bot.'
+        description='Click the link above to access the Open-Meteo Forecast API. The URL generated from the API is used to pull weather forecast data for this bot.',
+        color=ds.Color.green()
     )
     meteo.set_thumbnail(url='https://avatars.githubusercontent.com/u/86407831?s=200&v=4')
 
@@ -133,8 +134,6 @@ async def meteo(ctx):
 @bot.command()
 async def uptime(ctx):
     elapsed = int(round(time.time() - startup_time, 0))
-
-    print(elapsed)
 
     #Get days
     days = elapsed // (24 * 3600)
@@ -158,6 +157,17 @@ async def uptime(ctx):
     embed.add_field(name='Hours', value='{h:.0f}'.format(h=hours), inline=True)
     embed.add_field(name='Minutes', value='{m:.0f}'.format(m=minutes), inline=True)
     embed.add_field(name='Seconds', value='{s:.0f}'.format(s=elapsed), inline=True)
+
+    await ctx.send(embed=embed)
+
+#Command to show the main GitHub repository
+@bot.command()
+async def github(ctx):
+    embed = ds.Embed(title='GitHub Repository',
+        url='https://github.com/Tsunderarislime/atsui-yo',
+        description='Hey Sensei! Here\'s the link to the main GitHub repository for this bot!'
+    )
+    embed.set_thumbnail(url='https://i.ytimg.com/vi/0BqAlaSXEkE/mqdefault.jpg')
 
     await ctx.send(embed=embed)
 

@@ -34,7 +34,7 @@ def write_config(cfg):
 #Get help with command usage, called when no arguments are passed in ^config
 def config_help():
     embed = ds.Embed(title='📋 Config Command Usage 📋',
-        description='`^config` summons this text box.\nUse `^config info` to see the view the current config',
+        description='`^config` summons this information box.\nUse `^config info` to view the current config',
         color=ds.Color.magenta()
     )
     embed.add_field(name='Channel to Report', value='`^config channel <CHANNEL ID>`', inline=False)
