@@ -165,7 +165,8 @@ async def uptime(ctx):
 async def github(ctx):
     embed = ds.Embed(title='GitHub Repository',
         url='https://github.com/Tsunderarislime/atsui-yo',
-        description='Hey Sensei! Here\'s the link to the main GitHub repository for this bot!'
+        description='Hey Sensei! Here\'s the link to the main GitHub repository!',
+        color=ds.Color.green()
     )
     embed.set_thumbnail(url='https://i.ytimg.com/vi/0BqAlaSXEkE/mqdefault.jpg')
 
