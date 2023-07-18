@@ -17,7 +17,7 @@ intents = ds.Intents.default()
 intents.members = True
 intents.message_content = True
 
-bot = commands.Bot(command_prefix='^', description='ATSUI YO', intents=intents, activity=ds.Game(name="with fire"))
+bot = commands.Bot(command_prefix='^', description='ATSUI YO', intents=intents, activity=ds.Game(name="with fire | ^help"))
 bot.remove_command('help')
 #What to run when readying up
 @bot.event
@@ -78,8 +78,9 @@ async def configure(ctx, *args):
     elif args[0] in ['info', 'channel', 'meteo', 'threshold', 'time']:
         #Info box about current configuration
         if args[0] == 'info':
-            await ctx.send(embed=config_info(config, '▶️ The Config Currently in Use ▶️', ds.Color.dark_green()))
-            await ctx.send(embed=config_info(load_config(), '🔁 The Config After Restart 🔁', ds.Color.green()))
+            await ctx.send(embeds=[config_info(config, '▶️ The Config Currently in Use ▶️', ds.Color.dark_green()),
+                config_info(load_config(), '🔁 The Config After Restart 🔁', ds.Color.green())
+            ])
             return
         
         run = 'config_' + args[0] + str(args[1:])
@@ -127,6 +128,8 @@ async def meteo(ctx):
         color=ds.Color.green()
     )
     meteo.set_thumbnail(url='https://avatars.githubusercontent.com/u/86407831?s=200&v=4')
+    meteo.add_field(name='Guide on what parameters to choose', value='https://github.com/Tsunderarislime/atsui-yo', inline=False)
+    meteo.add_field(name='', value='Once you have obtained the Forecast API URL, you can change locations by using:\n`^config meteo <LAT> <LON>`')
 
     await ctx.send(embed=meteo)
 
@@ -185,23 +188,11 @@ async def current(ctx):
     #Generate the forecast
     async with ctx.typing():
         weather = utils.weather.get_weather(config['meteo'])
-        wcode = weather['current_weather']['weathercode']
-        l_time = weather['current_weather']['time'].replace('-', '/').replace('T', ' ') + ' ' + weather['timezone_abbreviation']
 
-        #Change the 'sunny' weathers to 'clear' weather
-        if (wcode < 10) and (weather['current_weather']['is_day'] == 0): 
-            wcode = wcode + 10
-        current_weather = 'Current weather: ' + str(weather['current_weather']['temperature']) + '°C, ' + utils.weather.code[wcode][0] + ' ' + utils.weather.code[wcode][1]
+        #Get the greeting and weather
+        greeting, embed = utils.weather.current(weather, ds.Color.blue())
 
-        #Construct an embed including the graph
-        embed = ds.Embed(title=current_weather,
-            description=utils.weather.current(weather),
-            color=ds.Color.blue()
-        )
-        embed.add_field(name='12 Hour Forecast', value='')
-        embed.set_footer(text=l_time)
-
-    await ctx.send(embed=embed)
+    await ctx.send(content=greeting + '\nHere is the current weather report!', embed=embed)
 
 #Class that contains the cog which has the daily task loop
 class Atsui(commands.Cog):
@@ -224,20 +215,24 @@ class Atsui(commands.Cog):
         #Determine the colour of the embed box and which sound file to post
         match np.searchsorted(config['threshold'], weather['daily']['temperature_2m_max'][0], side='right'):
             case 0: #Daily high is less than the threshold entirely
-                embed = utils.weather.weather_embed(weather, colour=ds.Color.green())
+                _, embed = utils.weather.current(weather, colour=ds.Color.green())
+                greeting = '\n悪くないぞ。'
                 audio = 'audio/not-bad.mp3'
             case 1: #Daily high made the lower half of the threshold
-                embed = utils.weather.weather_embed(weather, colour=ds.Color.yellow())
+                _, embed = utils.weather.current(weather, colour=ds.Color.yellow())
+                greeting = '\n*あっつい…*\n*暑くて干からびそう…*\n*動いてないのに暑いよ～…*'
                 audio = 'audio/atsui-yo.mp3'
             case 2: #Daily high made the upper half of the threshold
-                embed = utils.weather.weather_embed(weather, colour=ds.Color.orange())
+                _, embed = utils.weather.current(weather, colour=ds.Color.orange())
+                greeting = '\n## *あっつい…*\n## *暑くて干からびそう…*\n## *動いてないのに暑いよ～…*'
                 audio = 'audio/atsui-yooo.mp3'
             case 3: #Daily high exceeded the upper bound of the threshold
-                embed = utils.weather.weather_embed(weather, colour=ds.Color.red())
+                _, embed = utils.weather.current(weather, colour=ds.Color.red())
+                greeting = '\n# *あっつい…*\n# *暑くて干からびそう…*\n# *動いてないのに暑いよ～…*'
                 audio = 'audio/atsui-yooooo.mp3'
         
         #Send the weather report
-        await channel.send(embed=embed, file=ds.File(audio))
+        await channel.send(content=greeting, embed=embed, file=ds.File(audio))
 
 
 #All is good, run the bot

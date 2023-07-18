@@ -65,10 +65,10 @@ def get_weather(url):
     return api_result.json()
 
 #Return 12 hour temperature forecast as a bar graph, starting from current local time of the location
-def current(weather):
+def current(weather, colour):
     #Gather all of the necessary variables from the weather data
-    offset = int(weather['current_weather']['time'][-5:-3]) #Get hour offset for the day
-    clock_label = clocks[offset:] + clocks[:offset] #Shift clocks to the left to match the hour
+    offset = int(weather['current_weather']['time'][-5:-3])  #Get hour offset for the day
+    clock_label = clocks[(offset % 12):] + clocks[:(offset % 12)] #Shift clocks to the left to match the hour, use modulo to account for 24h time
     x = np.arange(start=0, stop=12, step=1) + offset #Indices to get hourly data from
     temp = [weather['hourly']['temperature_2m'][i] for i in x] #Temperatures
     wcode = [weather['hourly']['weathercode'][i] for i in x] #Weathercodes
@@ -88,7 +88,7 @@ def current(weather):
     #Generate the emoji string to represent the forecasted weather conditions
     for i in range(len(wcode)):
         if (wcode[i] < 10) and (day[i] == 0): 
-            wcode[i] = wcode[i] + 10 #Use moons in the case that it dark outside
+            wcode[i] += 10 #Use moons in the case that it dark outside
     sky = ''.join([code[w][1] for w in wcode])
 
     #Begin constructing the final string that will be sent by the bot
@@ -105,49 +105,35 @@ def current(weather):
     final.insert(0, '`      `'); final.append('`      `')
 
     #Append everything to create the complete bar graph
-    final[0] = final[0] + sky + '\n'
+    final[0] += sky + '\n'
     for i in range(len(rotated)):
-        final[i+1] = final[i+1] + ''.join(rotated[i]) + '\n'
-    final[-1] = final[-1] + clock_label
+        final[i+1] += ''.join(rotated[i]) + '\n'
+    final[-1] += clock_label
 
-    #Return the graph as a large string
-    return ''.join(final)
-
-#Construct weather embed to send, takes the weather json produced in get_weather() above
-def weather_embed(weather, colour):
-    #Some variables for local time stuffs
-    morning_or_not = [0, 12] #Times for 'morning', 'afternoon'. 'Evening' is determined by the 'is_day' attribute in the weather
-    current_time = dt.datetime.strptime(weather['current_weather']['time'], '%Y-%m-%dT%H:%M')  + dt.timedelta(minutes=dt.datetime.now().minute) #Datetime object for current time
-    wcode = weather['current_weather']['weathercode']
-
-    #Match the greeting to correspond to the time of day
-    match np.searchsorted(morning_or_not, current_time.hour, side='right'):
-        case 1: #Morning
-            greeting = 'Good morning, Sensei! Here is today\'s weather forecast!'
-        case 2: #Afternoon or Evening
-            if weather['current_weather']['is_day'] == 1:
-                greeting = 'Good afternoon, Sensei! Here is today\'s weather forecast!'
-            else:
-                greeting = 'Good evening, Sensei! Here is today\'s weather forecast!'
-    
-    #Change the 'sunny' weathers to 'clear' weather
-    if (wcode < 10) and (weather['current_weather']['is_day'] == 0): 
-        wcode = wcode + 10
-
-    #Current weather to put in the big text at the top of the embed
-    current_weather = 'Current weather: ' + str(weather['current_weather']['temperature']) + '°C, ' + code[wcode][0] + ' ' + code[wcode][1]
-
-    #Construct the embed with the current weather conditions
+    #Now to put everything into an embed
+    current_weather = 'Current weather: ' + str(weather['current_weather']['temperature']) + '°C, ' + code[wcode[0]][0] + ' ' + code[wcode[0]][1] #Title string
+    current_time = dt.datetime.strptime(weather['current_weather']['time'], '%Y-%m-%dT%H:%M') + dt.timedelta(minutes=dt.datetime.now().minute) #Datetime object for current time
     embed = ds.Embed(title=current_weather,
-        description=greeting,
+        description=''.join(final),
         color=colour
     )
-    #Add the high and low
-    embed.add_field(name='⬆️ High ⬆️', value=str(weather['daily']['temperature_2m_max'][0])+'°C', inline=False)
-    embed.add_field(name='⬇️ Low ⬇️', value=str(weather['daily']['temperature_2m_min'][0])+'°C', inline=False)
-
-    #Footer containing the time this was sent, based off of the location where the weather is being pulled from
+    #Add the high/low fields and the time footer
+    embed.add_field(name='⬆️ High ⬆️', value=str(weather['daily']['temperature_2m_max'][0]) + '°C', inline=False)
+    embed.add_field(name='⬇️ Low ⬇️', value=str(weather['daily']['temperature_2m_min'][0]) + '°C', inline=False)
     embed.set_footer(text=dt.datetime.strftime(current_time, '%Y/%m/%d %H:%M ') + weather['timezone_abbreviation'])
 
-    #Return the fully constructed weather embed
-    return embed
+    #Return the embed
+    return time_of_day(current_time.hour, day[0]), embed
+
+#Helper function to determine what to say given the time of day
+def time_of_day(hour, is_day):
+    match np.searchsorted([0, 12], hour, side='right'):
+        case 1: #Morning
+            greeting = 'Good morning, Sensei!'
+        case 2: #Afternoon or Evening
+            if is_day == 1:
+                greeting = 'Good afternoon, Sensei!'
+            else:
+                greeting = 'Good evening, Sensei!'
+    
+    return greeting

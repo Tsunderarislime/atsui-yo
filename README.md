@@ -21,4 +21,6 @@ This is a Discord bot that sends messages daily. It sends out the weather (temp 
 - Ask for the current weather with a 12-hour forecast
 
 ## Can I add this bot to my Discord server?
-If you have a way to host it, then sure go ahead. You will have to modify *config.yml* though. You will have to obtain your own Discord bot token, choose the channel ID that this bot will post to, and generate your Open-Meteo API request URL to use with the bot.
+If you have a way to host it, then sure go ahead. You will have to modify *config.yaml* before you can fully run it. You will have to obtain your own Discord bot token, choose the channel ID that this bot will post to, and generate your Open-Meteo API request URL to use with the bot.
+
+**Please do note that this is bot is not meant to operate in multiple servers simultaneously**, it is meant to serve one server (ie. a personal emote/sticker server). 
