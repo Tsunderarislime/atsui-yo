@@ -37,14 +37,14 @@ async def on_ready():
 @bot.command(pass_context=True)
 @commands.has_permissions(administrator=True)
 async def shutdown(ctx):
-    print('Shutting down...')
-    await ctx.send('Shutting down the bot...')
+    print('Invoked shutdown command')
+    await ctx.send('Shutting down...')
     await bot.close() #This returns an exit code of 0 for the sake of run.py
 
 @bot.command(pass_context=True)
 @commands.has_permissions(administrator=True)
 async def restart(ctx):
-    print('Restarting...')
+    print('Invoked restart command')
     await ctx.send('Restarting...')
     exit(1) #This causes a bunch of errors to pop up in the terminal window, but seems to function fine otherwise
 
@@ -64,7 +64,7 @@ async def restart_error(ctx, error):
 '''
 ================================================
 
-    Commands to configure the bot
+    Command to configure the bot
 
 ================================================
 '''
@@ -78,7 +78,7 @@ async def configure(ctx, *args):
     elif args[0] in ['info', 'channel', 'meteo', 'threshold', 'time']:
         #Info box about current configuration
         if args[0] == 'info':
-            await ctx.send(embeds=[config_info(config, '▶️ The Config Currently in Use ▶️', ds.Color.dark_green()),
+            await ctx.send(embeds=[config_info(config, '▶️ The Config Currently in Use ▶️', ds.Color.green()),
                 config_info(load_config(), '🔁 The Config After Restart 🔁', ds.Color.green())
             ])
             return
@@ -129,7 +129,7 @@ async def meteo(ctx):
     )
     meteo.set_thumbnail(url='https://avatars.githubusercontent.com/u/86407831?s=200&v=4')
     meteo.add_field(name='Guide on what parameters to choose', value='https://github.com/Tsunderarislime/atsui-yo', inline=False)
-    meteo.add_field(name='', value='Once you have obtained the Forecast API URL, you can change locations by using:\n`^config meteo <LAT> <LON>`')
+    meteo.add_field(name='', value='Once you have obtained the Forecast API URL, you can simply change locations by using:\n`^config meteo <LAT> <LON>`')
 
     await ctx.send(embed=meteo)
 
@@ -139,18 +139,13 @@ async def uptime(ctx):
     elapsed = int(round(time.time() - startup_time, 0))
 
     #Get days
-    days = elapsed // (24 * 3600)
-    elapsed = elapsed % (24 * 3600)
+    days = elapsed // (24 * 3600); elapsed = elapsed % (24 * 3600)
 
     #Get hours
-    hours = elapsed // 3600
-    elapsed = elapsed % 3600
+    hours = elapsed // 3600; elapsed = elapsed % 3600
 
     #Get minutes
-    minutes = elapsed // 60
-    elapsed = elapsed % 60
-
-    print(days, hours, minutes, elapsed)
+    minutes = elapsed // 60; elapsed = elapsed % 60
 
     #Message embed
     embed = ds.Embed(title='⌛ Uptime ⌛',
@@ -205,7 +200,7 @@ class Atsui(commands.Cog):
     def cog_unload(self):
         self.atsui.cancel()
 
-    #The main loop that this bot is centered around
+    #The main loop to send the daily reports
     @tasks.loop(time=dt.time(hour=config['time']['hour'], minute=config['time']['minute'], tzinfo=dt.timezone.utc))
     async def atsui(self):
         #Get the weather data
@@ -234,7 +229,7 @@ class Atsui(commands.Cog):
         #Send the weather report
         await channel.send(content=greeting, embed=embed)
         #Send the funny video
-        await channel.send(content=video)
+        await channel.send(content=video, silent=True)
 
 
 #All is good, run the bot

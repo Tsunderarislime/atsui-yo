@@ -1,5 +1,5 @@
 # atsui-yo
-[![atsui yo](https://i.ytimg.com/vi/0BqAlaSXEkE/mqdefault.jpg)](https://www.youtube.com/watch?v=0BqAlaSXEkE "atsui yo")
+[![atsui yo](https://i.imgur.com/y6ltubQ.png)](https://www.youtube.com/watch?v=0BqAlaSXEkE "atsui yo")
 
 **あっつい…**
 
