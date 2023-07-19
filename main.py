@@ -53,12 +53,12 @@ async def restart(ctx):
 @shutdown.error
 async def shutdown_error(ctx, error):
     if isinstance(error, commands.CheckFailure):
-        await ctx.send('Sorry, you do not have the necessary permissions to shutdown the bot.')
+        await ctx.send('Sensei, you need to have administrator permissions for me to shutdown!')
 
 @restart.error
 async def restart_error(ctx, error):
     if isinstance(error, commands.CheckFailure):
-        await ctx.send('Sorry, you do not have the necessary permissions to restart the bot.')
+        await ctx.send('Sensei, you need to have administrator permissions for me to restart!')
 
 
 '''
@@ -86,18 +86,18 @@ async def configure(ctx, *args):
         run = 'config_' + args[0] + str(args[1:])
         try:
             exec(run)
-            await ctx.send('Successfully modified `' + args[0] + '` in the config.\nIt is recommended that you run `^restart` to apply this new change.')
+            await ctx.send('Sensei! I have modified `' + args[0] + '` in the config!\nI recommend running `^restart` to apply this new change.')
         except Exception as e:
             print(e)
-            await ctx.send('There appears to be an issue with the parameters being passed.\nPlease use `^config` for a quick command usage guide.')
+            await ctx.send('Sensei, did you give me the right parameters?\nPlease use `^config` for a quick command usage guide.')
     else:
         await ctx.send('Invalid command `' + args[0] + '`')
             
 #Handle use of the commands without admin permissions
 @configure.error
-async def shutdown_error(ctx, error):
+async def configure_error(ctx, error):
     if isinstance(error, commands.CheckFailure):
-        await ctx.send('Sorry, you do not have the necessary permissions to change the bot configuration.')
+        await ctx.send('Sensei, you need to have administrator permissions to change my config!')
 
 '''
 ================================================
@@ -113,7 +113,7 @@ async def help(ctx):
         description='Hey Sensei! Here\'s a list of commands!',
         color=ds.Color.green()
     )
-    embed.add_field(name='Weather ☀️', value='- `^current`', inline=True)
+    embed.add_field(name='Weather ☀️', value='- `^current`\n- `^forecast`', inline=True)
     embed.add_field(name='Information ℹ️', value='- `^help`\n- `^github`\n- `^meteo`\n- `^uptime`', inline=True)
     embed.add_field(name='Admin 🔑', value='- `^config`\n- `^restart`\n- `^shutdown`', inline=False)
 
@@ -124,11 +124,11 @@ async def help(ctx):
 async def meteo(ctx):
     meteo = ds.Embed(title='Open-Meteo Forecast API',
         url='https://open-meteo.com/en/docs',
-        description='Click the link above to access the Open-Meteo Forecast API. The URL generated from the API is used to pull weather forecast data for this bot.',
+        description='Hey Sensei! Click the link above to access the Open-Meteo Forecast API. The URL generated from the API is used to pull weather forecast data.',
         color=ds.Color.green()
     )
     meteo.set_thumbnail(url='https://avatars.githubusercontent.com/u/86407831?s=200&v=4')
-    meteo.add_field(name='Guide on what parameters to choose', value='https://github.com/Tsunderarislime/atsui-yo', inline=False)
+    meteo.add_field(name='Guide on what parameters to choose', value='https://github.com/Tsunderarislime/atsui-yo/wiki/Open%E2%80%90Meteo-Forecast-API-URL', inline=False)
     meteo.add_field(name='', value='Once you have obtained the Forecast API URL, you can simply change locations by using:\n`^config meteo <LAT> <LON>`')
 
     await ctx.send(embed=meteo)
@@ -166,7 +166,7 @@ async def github(ctx):
         description='Hey Sensei! Here\'s the link to the main GitHub repository!',
         color=ds.Color.green()
     )
-    embed.set_thumbnail(url='https://i.ytimg.com/vi/0BqAlaSXEkE/mqdefault.jpg')
+    embed.set_image(url='https://i.imgur.com/y6ltubQ.png')
 
     await ctx.send(embed=embed)
 
@@ -180,14 +180,36 @@ async def github(ctx):
 #Command to get 12 hour temperature forecast from current hour
 @bot.command()
 async def current(ctx):
-    #Generate the forecast
+    #Generate the current 12 hour forecast
     async with ctx.typing():
         weather = utils.weather.get_weather(config['meteo'])
+        greeting, embed = utils.weather.current(weather, ds.Color.blue()) #current() also returns a greeting
 
-        #Get the greeting and weather
-        greeting, embed = utils.weather.current(weather, ds.Color.blue())
+    await ctx.send(content=greeting + '\nHere is the current weather forecast!', embed=embed)
 
-    await ctx.send(content=greeting + '\nHere is the current weather report!', embed=embed)
+#Command to get n day weather forecast (1-7 days), weather conditions, high/low temperatures. 6-7 days can look weird on smaller screens
+@bot.command()
+async def forecast(ctx, n):
+    #Ensure n is the right type and within bounds
+    try:
+        days = int(n)
+        assert (days >=1) & (days <= 7)
+    except Exception as e:
+        print(e)
+        await ctx.send('Sensei, did you give me the right parameter?\nIt should be an integer from 1-7.')
+        return
+    
+    #Generate the current n day forecast
+    async with ctx.typing():
+        weather = utils.weather.get_weather(config['meteo'])
+        embed = utils.weather.forecast(weather, days, ds.Color.blue())
+            
+    await ctx.send(content='Hey Sensei!\nHere is the ' + str(days) + ' day forecast you requested!', embed=embed)
+
+@forecast.error
+async def forecast_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send('Sensei! I need to know how many days you want in your forecast! [1-7]')
 
 #Class that contains the cog which has the daily task loop
 class Atsui(commands.Cog):
@@ -212,19 +234,19 @@ class Atsui(commands.Cog):
             case 0: #Daily high is less than the threshold entirely
                 _, embed = utils.weather.current(weather, colour=ds.Color.green())
                 greeting = '\n悪くないぞ。'
-                video = 'https://raw.githubusercontent.com/Tsunderarislime/atsui-yo/main/video/not-bad.mp4'
+                video = 'https://files.catbox.moe/0omoql.mp4'
             case 1: #Daily high made the lower half of the threshold
                 _, embed = utils.weather.current(weather, colour=ds.Color.yellow())
                 greeting = '\n*あっつい…*\n*暑くて干からびそう…*\n*動いてないのに暑いよ～…*'
-                video = 'https://raw.githubusercontent.com/Tsunderarislime/atsui-yo/main/video/atsui-yo.mp4'
+                video = 'https://files.catbox.moe/vzgv8j.mp4'
             case 2: #Daily high made the upper half of the threshold
                 _, embed = utils.weather.current(weather, colour=ds.Color.orange())
                 greeting = '\n## *あっつい…*\n## *暑くて干からびそう…*\n## *動いてないのに暑いよ～…*'
-                video = 'https://raw.githubusercontent.com/Tsunderarislime/atsui-yo/main/video/atsui-yooo.mp4'
+                video = 'https://files.catbox.moe/dz1vxd.mp4'
             case 3: #Daily high exceeded the upper bound of the threshold
                 _, embed = utils.weather.current(weather, colour=ds.Color.red())
                 greeting = '\n# *あっつい…*\n# *暑くて干からびそう…*\n# *動いてないのに暑いよ～…*'
-                video = 'https://raw.githubusercontent.com/Tsunderarislime/atsui-yo/main/video/atsui-yooooo.mp4'
+                video = 'https://files.catbox.moe/7v515c.mp4'
 
         #Send the weather report
         await channel.send(content=greeting, embed=embed)

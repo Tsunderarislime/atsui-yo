@@ -82,7 +82,7 @@ def current(weather, colour):
     for t in temp[::-1]:
         to_rotate.append(temp_bars[np.searchsorted(buckets, t, side='right')])
     
-    #Clever trick to rotate the bar graph to the correct orientation
+    #Clever trick to rotate the bar graph 90 degrees clockwise to the correct orientation
     rotated = list(zip(*to_rotate[::-1]))
     
     #Generate the emoji string to represent the forecasted weather conditions
@@ -112,7 +112,7 @@ def current(weather, colour):
 
     #Now to put everything into an embed
     current_weather = 'Current weather: ' + str(weather['current_weather']['temperature']) + '°C, ' + code[wcode[0]][0] + ' ' + code[wcode[0]][1] #Title string
-    current_time = dt.datetime.strptime(weather['current_weather']['time'], '%Y-%m-%dT%H:%M') + dt.timedelta(minutes=dt.datetime.now().minute) #Datetime object for current time
+    current_time = now(weather['utc_offset_seconds']) #Datetime object for current time
     embed = ds.Embed(title=current_weather,
         description=''.join(final),
         color=colour
@@ -124,6 +124,32 @@ def current(weather, colour):
 
     #Return the embed
     return time_of_day(current_time.hour, day[0]), embed
+
+#Forecast n days (1-7)
+def forecast(weather, n, colour):
+    #Construct the strings for the days at
+    days = ['` ' + weather['daily']['time'][i][-5:].replace('-', '/') + '`' + code[weather['daily']['weathercode'][i]][1] for i in range(n)]
+    #High and low temperature
+    high = ['`' + str(weather['daily']['temperature_2m_max'][i]).center(6) + '`⬛' for i in range(n)]
+    low = ['`' + str(weather['daily']['temperature_2m_min'][i]).center(6) + '`⬛' for i in range(n)]
+
+    day_row = '`    `🗓️' + ''.join(days)
+    high_row = '\n`HIGH`⬆️' + ''.join(high)
+    low_row = '\n` LOW`⬇️' + ''.join(low)
+
+    current_time = now(weather['utc_offset_seconds']) #For the footer
+
+    embed = ds.Embed(title=str(n) + ' Day Forecast',
+        description=day_row + high_row + low_row,
+        color=colour
+    )
+    embed.set_footer(text=dt.datetime.strftime(current_time, '%Y/%m/%d %H:%M ') + weather['timezone_abbreviation'])
+
+    return embed
+
+#Quick helper to return current time as local time for the selected location
+def now(utc_offset):
+    return dt.datetime.now(tz=dt.timezone.utc) + dt.timedelta(seconds=utc_offset) #Datetime object for current time
 
 #Helper function to determine what to say given the time of day
 def time_of_day(hour, is_day):

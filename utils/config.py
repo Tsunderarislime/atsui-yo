@@ -39,7 +39,7 @@ def config_help():
     )
     embed.add_field(name='Channel to Report', value='`^config channel <CHANNEL ID>`', inline=False)
     embed.add_field(name='Meteo URL or (Latitude/Longitude) (Use `^meteo` for more info)', value='`^config meteo <METEO URL> OR ^config meteo <LAT> <LON>`', inline=False)
-    embed.add_field(name='Threshold for Audio Files (°C)', value='`^config threshold <LOWER> <MIDDLE> <UPPER>`', inline=False)
+    embed.add_field(name='Threshold for Videos (°C)', value='`^config threshold <LOWER> <MIDDLE> <UPPER>`', inline=False)
     embed.add_field(name='Time for Daily Report (UTC)', value='`^config time <HOUR> <MINUTE>`', inline=False)
 
     return embed
@@ -52,7 +52,7 @@ def config_info(config, title, colour):
     embed.add_field(name='Channel to Report', value='<#' + str(config['channel']) + '> (' + str(config['channel']) + ')', inline=False)
     embed.add_field(name='Meteo URL (Use `^meteo` for more info)', value=config['meteo'], inline=False)
     embed.add_field(name='Latitude/Longitude', value='(' + str(config['coord']['latitude']) + ', ' + str(config['coord']['longitude']) + ')', inline=False)
-    embed.add_field(name='Threshold for Audio Files (°C)', value=str(config['threshold']), inline=False)
+    embed.add_field(name='Threshold for Video (°C)', value=str(config['threshold']), inline=False)
     embed.add_field(name='Time for Daily Report (UTC)', value=str(config['time']['hour']).zfill(2) + ':' + str(config['time']['minute']).zfill(2), inline=False)
 
     return embed
