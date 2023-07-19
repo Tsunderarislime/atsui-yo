@@ -1,5 +1,5 @@
 # atsui-yo
-[![atsui yo](https://i.imgur.com/y6ltubQ.png)](https://www.youtube.com/watch?v=0BqAlaSXEkE "atsui yo")
+[![atsui yo](https://i.imgur.com/y6ltubQ.png)](https://twitter.com/hana87z/status/1565271229057372160 "atsui yo")
 
 **あっつい…**
 
@@ -38,6 +38,4 @@ If you have a way to host it, then sure go ahead. You will have to modify *confi
 They have a really nice API for requesting weather data that is free, is very customizable, has a broad time range, and most importantly of all, doesn't require you to sign up for an account to use.
 
 ### [れいるか](https://twitter.com/hana87z)
-They made the video which was pretty much the main reason why I began developing this bot in the first place.
-
-# [Go watch it](https://twitter.com/hana87z/status/1565271229057372160)
+They made the video which was pretty much the main reason why I began developing this bot in the first place. Click the image at the top of this page to watch the video.
