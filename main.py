@@ -232,21 +232,24 @@ class Atsui(commands.Cog):
         #Determine the colour of the embed box and which sound file to post
         match np.searchsorted(config['threshold'], weather['daily']['temperature_2m_max'][0], side='right'):
             case 0: #Daily high is less than the threshold entirely
-                _, embed = utils.weather.current(weather, colour=ds.Color.green())
-                greeting = '\n悪くないぞ。'
+                colour=ds.Color.green()
+                greeting = '悪くないぞ。'
                 video = 'https://files.catbox.moe/0omoql.mp4'
             case 1: #Daily high made the lower half of the threshold
-                _, embed = utils.weather.current(weather, colour=ds.Color.yellow())
-                greeting = '\n*あっつい…*\n*暑くて干からびそう…*\n*動いてないのに暑いよ～…*'
+                colour=ds.Color.yellow()
+                greeting = '*あっつい…*\n*暑くて干からびそう…*\n*動いてないのに暑いよ～…*'
                 video = 'https://files.catbox.moe/vzgv8j.mp4'
             case 2: #Daily high made the upper half of the threshold
-                _, embed = utils.weather.current(weather, colour=ds.Color.orange())
-                greeting = '\n## *あっつい…*\n## *暑くて干からびそう…*\n## *動いてないのに暑いよ～…*'
+                colour=ds.Color.orange()
+                greeting = '## *あっつい…*\n## *暑くて干からびそう…*\n## *動いてないのに暑いよ～…*'
                 video = 'https://files.catbox.moe/dz1vxd.mp4'
             case 3: #Daily high exceeded the upper bound of the threshold
-                _, embed = utils.weather.current(weather, colour=ds.Color.red())
-                greeting = '\n# *あっつい…*\n# *暑くて干からびそう…*\n# *動いてないのに暑いよ～…*'
+                colour=ds.Color.red()
+                greeting = '# *あっつい…*\n# *暑くて干からびそう…*\n# *動いてないのに暑いよ～…*'
                 video = 'https://files.catbox.moe/7v515c.mp4'
+        
+        #Construct the current weather embed
+        _, embed = utils.weather.current(weather, colour)
 
         #Send the weather report
         await channel.send(content=greeting, embed=embed)
