@@ -65,7 +65,7 @@ def get_weather(url):
     return api_result.json()
 
 #Return 12 hour temperature forecast as a bar graph, starting from current local time of the location
-def current(weather, colour):
+def current(weather, colour, location):
     #Gather all of the necessary variables from the weather data
     offset = int(weather['current_weather']['time'][-5:-3])  #Get hour offset for the day
     clock_label = clocks[(offset % 12):] + clocks[:(offset % 12)] #Shift clocks to the left to match the hour, use modulo to account for 24h time
@@ -120,13 +120,13 @@ def current(weather, colour):
     #Add the high/low fields and the time footer
     embed.add_field(name='⬆️ High ⬆️', value=str(weather['daily']['temperature_2m_max'][0]) + '°C', inline=False)
     embed.add_field(name='⬇️ Low ⬇️', value=str(weather['daily']['temperature_2m_min'][0]) + '°C', inline=False)
-    embed.set_footer(text=dt.datetime.strftime(current_time, '%Y/%m/%d %H:%M ') + weather['timezone_abbreviation'])
+    embed.set_footer(text=location + '\n' + dt.datetime.strftime(current_time, '%Y/%m/%d %H:%M ') + weather['timezone_abbreviation'])
 
     #Return the embed
     return time_of_day(current_time.hour, day[0]), embed
 
 #Forecast n days (1-7)
-def forecast(weather, n, colour):
+def forecast(weather, n, colour, location):
     #Construct the strings for the days at
     days = ['` ' + weather['daily']['time'][i][-5:].replace('-', '/') + '`' + code[weather['daily']['weathercode'][i]][1] for i in range(n)]
     #High and low temperature
@@ -143,7 +143,7 @@ def forecast(weather, n, colour):
         description=day_row + high_row + low_row,
         color=colour
     )
-    embed.set_footer(text=dt.datetime.strftime(current_time, '%Y/%m/%d %H:%M ') + weather['timezone_abbreviation'])
+    embed.set_footer(text=location + '\n' + dt.datetime.strftime(current_time, '%Y/%m/%d %H:%M ') + weather['timezone_abbreviation'])
 
     return embed
 

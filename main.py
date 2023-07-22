@@ -183,7 +183,7 @@ async def current(ctx):
     #Generate the current 12 hour forecast
     async with ctx.typing():
         weather = utils.weather.get_weather(config['meteo'])
-        greeting, embed = utils.weather.current(weather, ds.Color.blue()) #current() also returns a greeting
+        greeting, embed = utils.weather.current(weather, ds.Color.blue(), config['location']) #current() also returns a greeting
 
     await ctx.send(content=greeting + '\nHere is the current weather forecast!', embed=embed)
 
@@ -202,7 +202,7 @@ async def forecast(ctx, n):
     #Generate the current n day forecast
     async with ctx.typing():
         weather = utils.weather.get_weather(config['meteo'])
-        embed = utils.weather.forecast(weather, days, ds.Color.blue())
+        embed = utils.weather.forecast(weather, days, ds.Color.blue(), config['location'])
             
     await ctx.send(content='Hey Sensei!\nHere is the ' + str(days) + ' day forecast you requested!', embed=embed)
 
@@ -249,7 +249,7 @@ class Atsui(commands.Cog):
                 video = 'https://files.catbox.moe/7v515c.mp4'
         
         #Construct the current weather embed
-        _, embed = utils.weather.current(weather, colour)
+        _, embed = utils.weather.current(weather, colour, config['location'])
 
         #Send the weather report
         await channel.send(content=greeting, embed=embed)

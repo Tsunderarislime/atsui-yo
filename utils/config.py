@@ -1,5 +1,6 @@
 import yaml
 import discord as ds
+import requests
 
 '''
 ====================================================
@@ -51,7 +52,8 @@ def config_info(config, title, colour):
     )
     embed.add_field(name='Channel to Report', value='<#' + str(config['channel']) + '> (' + str(config['channel']) + ')', inline=False)
     embed.add_field(name='Meteo URL (Use `^meteo` for more info)', value=config['meteo'], inline=False)
-    embed.add_field(name='Latitude/Longitude', value='(' + str(config['coord']['latitude']) + ', ' + str(config['coord']['longitude']) + ')', inline=False)
+    embed.add_field(name='Latitude/Longitude', value='(' + str(config['coord']['latitude']) + ', ' + str(config['coord']['longitude']) + ')', inline=True)
+    embed.add_field(name='Location', value=config['location'], inline=True)
     embed.add_field(name='Threshold for Video (°C)', value=str(config['threshold']), inline=False)
     embed.add_field(name='Time for Daily Report (UTC)', value=str(config['time']['hour']).zfill(2) + ':' + str(config['time']['minute']).zfill(2), inline=False)
 
@@ -102,6 +104,9 @@ def config_meteo(*args):
 
         #Reconstruct and write the updated URL to the config
         config['meteo'] = http + '?' + params[0] + ''.join(['&' + params[i] for i in range(1, len(params))])
+    
+    #Change the location string to match the newly assigned latitude and longitude
+    config['location'] = get_location(config['coord']['latitude'], config['coord']['longitude'])
 
     write_config(config)
 
@@ -123,3 +128,7 @@ def config_time(hour, minute):
     config['time']['hour'] = h; config['time']['minute'] = m
     write_config(config)
 
+#Get location from latitude and longitude and return a string '<NAME>, <COUNTRY>'. Uses Nominatim API for OpenStreetMap to do a reverse geocode lookup.
+def get_location(lat, lon):
+    data = requests.get('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + str(lat) + '&lon=' + str(lon) + '&zoom=10').json()
+    return data['name'] + ', ' + data['address']['country']

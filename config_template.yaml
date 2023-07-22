@@ -11,6 +11,8 @@ coord:
   latitude: 0
   longitude: 0
 
+#Location, formatted as 'Name, Country' (YOU CAN IGNORE THIS)
+location: 'Name, Country'
 
 #
 #    Everything below here you have to get on your own
