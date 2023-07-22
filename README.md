@@ -15,13 +15,13 @@ In addition, there is a feature implemented just for fun, where the bot will pos
 
 This bot is highly configurable, with many commands available to change the values without having to open up the config file.
 
-**This bot is developed purely for fun, as there are probably other Discord bots out there that can post weather data just fine.**
+**This bot is developed purely for fun, there are probably other Discord bots out there that can post weather forecasts.**
 
 ## Features
 - Ask for the current weather with a 12-hour forecast
 - Ask for the upcoming weather forecast, from 1 to 7 days
-- Configure multiple parameters of the bot with chat commands (administrator permissions required)
-- Restart and shutdown the bot with chat commands (administrator permissions required)
+- Configure multiple parameters of the bot with chat commands (server administrator permissions required)
+- Restart and shutdown the bot with chat commands (server administrator permissions required)
 
 ## Customization
 - Location of where you want to see weather forecasts
@@ -37,5 +37,8 @@ If you have a way to host it, then sure go ahead. You will have to modify *confi
 ### [Open-Meteo](https://open-meteo.com/)
 They have a really nice API for requesting weather data that is free, is very customizable, has a broad time range, and most importantly of all, doesn't require you to sign up for an account to use.
 
-### [れいるか](https://twitter.com/hana87z)
+### [OpenStreetMap](https://openstreetmap.org/copyright)
+They have an easy to use API for reverse geocoding, which is what I needed to display the name of a location in the weather reports.
+
+### [れいるか (reiruka)](https://twitter.com/hana87z)
 They made the video which was pretty much the main reason why I began developing this bot in the first place. Click the image at the top of this readme to watch the video.
