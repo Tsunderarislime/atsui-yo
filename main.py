@@ -38,15 +38,15 @@ async def on_ready():
 @commands.has_permissions(administrator=True)
 async def shutdown(ctx):
     print('Invoked shutdown command')
-    await ctx.send('Shutting down...')
+    await ctx.send('Sensei! I\'m gonna go to sleep now.')
     await bot.close() #This returns an exit code of 0 for the sake of run.py
 
 @bot.command(pass_context=True)
 @commands.has_permissions(administrator=True)
 async def restart(ctx):
     print('Invoked restart command')
-    await ctx.send('Restarting...')
-    exit(1) #This causes a bunch of errors to pop up in the terminal window, but seems to function fine otherwise
+    await ctx.send('Sensei! I\'ll be right back!')
+    exit(1) #This will raise an exception from asyncio, but it will still close and restart the bot properly
 
 
 #Handle use of the commands without admin permissions

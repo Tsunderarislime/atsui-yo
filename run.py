@@ -7,5 +7,5 @@ exit_code = 1
 while exit_code != 0:
     #Run the bot like this so that updates to the config can be seen live
     exit_code = os.system('python main.py')
-    time.sleep(3)
+    time.sleep(2)
     print(exit_code)
