@@ -97,12 +97,12 @@ def current(weather, colour, location):
     #Clean up the temperature display to show min, mid, and max temperature
     for i in range(len(final)):
         if i in [0, 6, 11]:
-            final[i] = '`' + final[i] + '°C`'
+            final[i] = '`' + final[i].rjust(5) + '°C`'
         else:
-            final[i] = '`      `'
+            final[i] = '`       `'
 
     #Complete the leftmost column to start attaching everything else to
-    final.insert(0, '`      `'); final.append('`      `')
+    final.insert(0, '`       `'); final.append('`       `')
 
     #Append everything to create the complete bar graph
     final[0] += sky + '\n'
