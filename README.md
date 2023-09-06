@@ -35,6 +35,16 @@ If you have a way to host it, then sure go ahead. You will have to modify *confi
 
 **Please do note that this is bot is not meant to operate in multiple servers simultaneously**, it is meant to serve one server (ie. a personal emote/sticker server). 
 
+## Examples
+### Getting the current weather
+![Current weather example](https://i.imgur.com/mtDE39w.png)
+
+### Getting a 5 day forecast
+![Forecasting 5 days](https://i.imgur.com/WGjgp0n.png)
+
+### Getting a list of all commands
+![Listing all commands](https://i.imgur.com/r5GnbF4.png)
+
 ## Special Thanks
 ### [Open-Meteo](https://open-meteo.com/)
 They have a really nice API for requesting weather data that is free, is very customizable, has a broad time range, and most importantly of all, doesn't require you to sign up for an account to use.
