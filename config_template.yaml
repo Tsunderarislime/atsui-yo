@@ -14,6 +14,9 @@ coord:
 #Location, formatted as 'Name, Country' (YOU CAN IGNORE THIS)
 location: 'Name, Country'
 
+#Clear (Whether the bot clears previous messages per day. Use if you have a dedicated weather channel in order to reduce lag in desktop clients)
+clear: False
+
 #
 #    Everything below here you have to get on your own
 #

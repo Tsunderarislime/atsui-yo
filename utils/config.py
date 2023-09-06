@@ -38,7 +38,8 @@ def config_help():
         description='`^config` summons this information box.\nUse `^config info` to view the current config',
         color=ds.Color.magenta()
     )
-    embed.add_field(name='Channel to Report', value='`^config channel <CHANNEL ID>`', inline=False)
+    embed.add_field(name='Clear the channel', value='`^config clear <TRUE/FALSE>`', inline=True)
+    embed.add_field(name='Channel to Report', value='`^config channel <CHANNEL ID>`', inline=True)
     embed.add_field(name='Meteo URL or (Latitude/Longitude) (Use `^meteo` for more info)', value='`^config meteo <METEO URL> OR ^config meteo <LAT> <LON>`', inline=False)
     embed.add_field(name='Threshold for Videos (°C)', value='`^config threshold <LOWER> <MIDDLE> <UPPER>`', inline=False)
     embed.add_field(name='Time for Daily Report (UTC)', value='`^config time <HOUR> <MINUTE>`', inline=False)
@@ -50,12 +51,18 @@ def config_info(config, title, colour):
     embed = ds.Embed(title=title,
         color=colour
     )
-    embed.add_field(name='Channel to Report', value='<#' + str(config['channel']) + '> (' + str(config['channel']) + ')', inline=False)
+    embed.add_field(name='Clear the channel', value=str(config['clear']), inline=True)
+    embed.add_field(name='Channel to Report', value='<#' + str(config['channel']) + '> (' + str(config['channel']) + ')', inline=True)
     embed.add_field(name='Meteo URL (Use `^meteo` for more info)', value=config['meteo'], inline=False)
     embed.add_field(name='Latitude/Longitude', value='(' + str(config['coord']['latitude']) + ', ' + str(config['coord']['longitude']) + ')', inline=True)
     embed.add_field(name='Location', value=config['location'], inline=True)
     embed.add_field(name='Threshold for Video (°C)', value=str(config['threshold']), inline=False)
     embed.add_field(name='Time for Daily Report (UTC)', value=str(config['time']['hour']).zfill(2) + ':' + str(config['time']['minute']).zfill(2), inline=False)
+
+    if config['clear']:
+        print('yes')
+    else:
+        print('no')
 
     return embed
 
@@ -67,6 +74,17 @@ def config_info(config, title, colour):
 
 ====================================================
 '''
+#Change whether or not the bot clears its previous messages in the channel
+def config_clear(bool):
+    #Make sure the input is either some variant of true or some variant of false
+    assert bool.lower() in ['true', 'false']
+    config = load_config()
+    if bool.lower() == 'true':
+        config['clear'] = True
+    else:
+        config['clear'] = False
+    write_config(config)
+    
 #Change the channel that the bot posts the weather reports to
 def config_channel(id):
     config = load_config()

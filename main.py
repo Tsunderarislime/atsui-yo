@@ -75,7 +75,7 @@ async def configure(ctx, *args):
     #Send help dialogue if not enough arguments are passed
     if len(args) < 1:
         await ctx.send(embed=config_help())
-    elif args[0] in ['info', 'channel', 'meteo', 'threshold', 'time']:
+    elif args[0] in ['info', 'clear', 'channel', 'meteo', 'threshold', 'time']:
         #Info box about current configuration
         if args[0] == 'info':
             await ctx.send(embeds=[config_info(config, '▶️ The Config Currently in Use ▶️', ds.Color.green()),
@@ -234,28 +234,37 @@ class Atsui(commands.Cog):
             case 0: #Daily high is less than the threshold entirely
                 colour=ds.Color.green()
                 greeting = '悪くないぞ。'
-                video = 'https://files.catbox.moe/0omoql.mp4'
+                video = '[⠀](https://files.catbox.moe/0omoql.mp4)'
             case 1: #Daily high made the lower half of the threshold
                 colour=ds.Color.yellow()
                 greeting = '*あっつい…*\n*暑くて干からびそう…*\n*動いてないのに暑いよ～…*'
-                video = 'https://files.catbox.moe/vzgv8j.mp4'
+                video = '[⠀](https://files.catbox.moe/vzgv8j.mp4)'
             case 2: #Daily high made the upper half of the threshold
                 colour=ds.Color.orange()
                 greeting = '## *あっつい…*\n## *暑くて干からびそう…*\n## *動いてないのに暑いよ～…*'
-                video = 'https://files.catbox.moe/dz1vxd.mp4'
+                video = '[⠀](https://files.catbox.moe/dz1vxd.mp4)'
             case 3: #Daily high exceeded the upper bound of the threshold
                 colour=ds.Color.red()
                 greeting = '# *あっつい…*\n# *暑くて干からびそう…*\n# *動いてないのに暑いよ～…*'
-                video = 'https://files.catbox.moe/7v515c.mp4'
+                video = '[⠀](https://files.catbox.moe/7v515c.mp4)'
         
         #Construct the current weather embed
         _, embed = utils.weather.current(weather, colour, config['location'])
+
+        #In the case that the bot wants to clear its own messages.
+        #Highly recommend if it sends messages in its own separate channel, as the Discord desktop client can lag with the amount of emojis it needs to show
+        if config['clear']:
+            n = await channel.purge(limit=8, check=is_me, reason='Bot cleaning its own messages', bulk=True)
+            print('Deleted ' + str(len(n)) + ' bot message(s)')
 
         #Send the weather report
         await channel.send(content=greeting, embed=embed)
         #Send the funny video
         await channel.send(content=video, silent=True)
 
+#Check if messages were sent by the bot
+def is_me(m):
+    return m.author.id == bot.user.id
 
 #All is good, run the bot
 bot.run(config['key'])
