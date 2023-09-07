@@ -17,6 +17,10 @@ This bot is highly configurable, with many commands available to change the valu
 
 **This bot is developed purely for fun, there are probably other Discord bots out there that can post weather forecasts.**
 
+Here is what a daily report may look like:
+
+![Daily weather report example](https://i.imgur.com/3RiSPKX.png)
+
 ## Features
 - Posts the 12-hour forecast daily at a configurable time and channel
 - Ask for the current weather with a 12-hour forecast on demand through a chat command
