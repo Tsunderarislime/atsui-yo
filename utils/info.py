@@ -9,7 +9,9 @@ def help():
     )
     embed.add_field(name='Admin 🔑', value='- `^config`\n- `^restart`\n- `^shutdown`', inline=True)
     embed.add_field(name='Information ℹ️', value='- `^help`\n- `^github`\n- `^meteo`\n- `^uptime`', inline=True)
-    embed.add_field(name='Weather ☀️', value='- `^current`\n- `^forecast`', inline=False)
+    embed.add_field(name='', value='', inline=False)
+    embed.add_field(name='Weather ☀️', value='- `^current`\n- `^forecast`', inline=True)
+    embed.add_field(name='Fun ✨', value='- `^atsui`\n- `^voice`', inline=True)
 
     return embed
 

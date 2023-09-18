@@ -5,7 +5,7 @@ import time
 import datetime as dt
 import utils.weather
 import utils.info
-import requests
+import utils.fun
 from utils.config import *
 
 #Load in the config
@@ -139,7 +139,28 @@ async def uptime(ctx):
 
 ================================================
 '''
+#Command to manually send an ATSUI YO video. Choose from levels 1-4 of increasing distortion or enter nothing to send a random one
+@bot.command()
+async def atsui(ctx, *args):
+    if len(args) < 1:
+        video = utils.fun.atsui(-1) #The function will handle n = -1 as random
+    else:
+        try: #Ensure the argument is an integer, 1, 2, 3, 4
+            n = int(args[0])
+            assert n in [1, 2, 3, 4]
+            video = utils.fun.atsui(n)
+        except Exception as e:
+            print(e)
+            await ctx.send('Sensei, did you give me the right parameters?\nIt should be an integer from 1-4.')
+            return
+    
+    await ctx.send(video) #ATSUI YO
 
+#Command to randomly send a Hoshino or Hoshino (Swimsuit) voice line, straight from the Blue Archive Wiki
+@bot.command()
+async def voice(ctx):
+    utils.fun.voice()
+    await ctx.send(content='Hey Sensei! I have something to say to you!', file=ds.File('voice.ogg'))
 
 '''
 ================================================
