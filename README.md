@@ -25,6 +25,7 @@ Here is what a daily report may look like:
 - Posts the 12-hour forecast daily at a configurable time and channel
 - Ask for the current weather with a 12-hour forecast on demand through a chat command
 - Ask for the upcoming weather forecast, from 1 to 7 days on demand through a chat command
+- Ask for a random Hoshino voice line from the Blue Archive wiki
 - Configure multiple parameters of the bot with chat commands (server administrator permissions required)
 - Restart and shutdown the bot with chat commands (server administrator permissions required)
 
@@ -55,6 +56,9 @@ They have a really nice API for requesting weather data that is free, is very cu
 
 ### [OpenStreetMap](https://openstreetmap.org/copyright)
 They have an easy to use API for reverse geocoding, which is what I needed to display the name of a location in the weather reports.
+
+### [Blue Archive Wiki](https://bluearchive.wiki/wiki/Main_Page)
+They host a very up-to-date wiki for the game and also have many in-game resources available for viewing.
 
 ### [れいるか (reiruka)](https://twitter.com/hana87z)
 They made the video which was pretty much the main reason why I began developing this bot in the first place. Click the image at the top of this readme to watch the video.
