@@ -60,5 +60,5 @@ They have an easy to use API for reverse geocoding, which is what I needed to di
 ### [Blue Archive Wiki](https://bluearchive.wiki/wiki/Main_Page)
 They host a very up-to-date wiki for the game and also have many in-game resources available for viewing.
 
-### [れいるか (reiruka)](https://twitter.com/hana87z)
+### [れいるか (reiruka)](https://twitter.com/reiruka87)
 They made the video which was pretty much the main reason why I began developing this bot in the first place. Click the image at the top of this readme to watch the video.
